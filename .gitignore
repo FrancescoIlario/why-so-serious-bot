@@ -17,3 +17,6 @@
 bin/**
 main
 **/__debug_bin
+
+# vscode
+.vscode/launch.json
