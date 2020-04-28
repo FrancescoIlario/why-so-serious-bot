@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/FrancescoIlario/wss-bot/internal/bot"
-	"github.com/FrancescoIlario/wss-bot/internal/conf"
-	"github.com/FrancescoIlario/wss-bot/pkg/wssface"
+	"github.com/FrancescoIlario/why-so-serious-bot/internal/bot"
+	"github.com/FrancescoIlario/why-so-serious-bot/internal/conf"
+	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssface"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 

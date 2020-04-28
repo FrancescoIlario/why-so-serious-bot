@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"github.com/FrancescoIlario/wss-bot/pkg/wssface"
+	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssface"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
