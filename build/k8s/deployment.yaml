@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: wssbot
+  name: wss-bot
 spec:
   selector:
     matchLabels:
-      app: wssbot
+      app: wss-bot
   template:
     metadata:
       labels:
-        app: wssbot
+        app: wss-bot
     spec:
       containers:
-      - name: wssbot
-        image: filario.azurecr.io/wssbot:latest
+      - name: wss-bot
+        image: filario/wss-bot
         resources:
           limits:
             memory: "128Mi"

@@ -1,8 +1,8 @@
 replicaCount: 1
 
-name: wssbot
+name: wss-bot
 image:
-  repository: filario.azurecr.io/wssbot
+  repository: filario/wss-bot
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart version.
-  tag: latest
+  tag: ""
