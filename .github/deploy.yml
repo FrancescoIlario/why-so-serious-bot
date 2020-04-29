@@ -1,4 +1,13 @@
-# View examples and documentation at https://deliverybot.dev/docs/
-production:
-  environment: production
-  production_environment: true
+# Automatic deployment to a staging environment on every push to master.
+staging:
+  auto_deploy_on: refs/heads/master
+  required_contexts: ["build"]
+  environment: staging
+  description: 'Staging'
+  payload:
+    value_files: ["./config/staging.yml", "./config/_common.yml"]
+    release: staging-myapp
+    namespace: example-helm
+    track: stable
+    values:
+      replicaCount: 1

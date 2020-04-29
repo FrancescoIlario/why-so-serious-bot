@@ -17,8 +17,6 @@ jobs:
         secrets: '${{ toJSON(secrets) }}'
         version: '${{ github.sha }}'
         chart: 'wssbot'
-        namespace: 'wss-bot'
         helm: 'helm3'
-        release: 'wss-bot'
       env:
         KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
