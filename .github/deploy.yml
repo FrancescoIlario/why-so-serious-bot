@@ -6,8 +6,8 @@ staging:
   description: 'Staging'
   payload:
     value_files: ["./config/staging.yml", "./config/_common.yml"]
-    release: staging-myapp
-    namespace: example-helm
+    release: wss-bot
+    namespace: wss-bot
     track: stable
     values:
       replicaCount: 1
