@@ -16,7 +16,7 @@ jobs:
         token: '${{ github.token }}'
         secrets: '${{ toJSON(secrets) }}'
         version: '${{ github.sha }}'
-        chart: 'build/helm/wssbot'
+        chart: 'wssbot'
         namespace: 'wss-bot'
         helm: 'helm3'
         release: 'wss-bot'
