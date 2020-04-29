@@ -20,4 +20,9 @@ main
 
 # vscode
 .vscode/launch.json
+
+# helm
 **/*.tgz
+
+# local
+.local/**
