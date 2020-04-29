@@ -13,9 +13,25 @@ spec:
     spec:
       containers:
       - name: {{ .Values.name }}
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         resources:
           limits:
             memory: "128Mi"
             cpu: "500m"
+        env:
+          - name: WSS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secret.name }}
+                key: token
+          - name: WSS_FACE_SUBSCRIPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secret.name }}
+                key: face-subscription
+          - name: WSS_FACE_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secret.name }}
+                key: face-endpoint
