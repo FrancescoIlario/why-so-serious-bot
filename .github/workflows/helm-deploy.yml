@@ -16,6 +16,6 @@ jobs:
         token: '${{ github.token }}'
         secrets: '${{ toJSON(secrets) }}'
         version: '${{ github.sha }}'
-        chart: 'wssbot'
+        chart: 'build/helm/wssbot'
       env:
         KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
