@@ -19,5 +19,6 @@ jobs:
         chart: 'build/helm/wssbot'
         namespace: 'wss-bot'
         helm: 'helm3'
+        release: 'wss-bot'
       env:
         KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
