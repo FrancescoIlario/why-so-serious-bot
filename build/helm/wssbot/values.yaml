@@ -8,3 +8,7 @@ image:
   tag: latest
 secret:
   name: wss-secret
+  token: ""
+  face: 
+    endpoint: ""
+    subscription: ""
