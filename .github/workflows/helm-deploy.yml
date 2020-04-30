@@ -64,6 +64,3 @@ jobs:
       - uses: azure/k8s-deploy@v1
         with:
           manifests: ${{ steps.bake.outputs.manifestsBundle }}
-          images: |
-            ${{ env.REGISTRY_NAME }}/wss-bot:${{ github.sha }}
-          namespace: ${{ env.NAMESPACE }}
