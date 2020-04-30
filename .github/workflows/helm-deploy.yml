@@ -50,7 +50,7 @@ jobs:
 
       # Create namespace if doesn't exist
       - run: |
-          kubectl create namespace ${{ env.NAMESPACE }} --dry-run -o json | kubectl apply -f -
+          kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o json | kubectl apply -f -
 
       # Baking the helm chart to generate the manifests to deploy
       - uses: azure/k8s-bake@v1
