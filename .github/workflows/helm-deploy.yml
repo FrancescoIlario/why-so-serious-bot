@@ -58,10 +58,10 @@ jobs:
           renderEngine: "helm2"
           helmChart: "./build/helm/wss-bot/"
           helm-version: "latest"
-          namespace: ${{ env.NAMESPACE }}
         id: bake
 
       # Deploy app to AKS
       - uses: azure/k8s-deploy@v1
         with:
           manifests: ${{ steps.bake.outputs.manifestsBundle }}
+          namespace: ${{ env.NAMESPACE }}
