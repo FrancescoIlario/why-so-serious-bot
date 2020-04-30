@@ -56,7 +56,7 @@ jobs:
       - uses: azure/k8s-bake@v1
         with:
           renderEngine: "helm2"
-          helmChart: "./build/helm/wssbot/"
+          helmChart: "./build/helm/wss-bot/"
           helm-version: "latest"
         id: bake
 
