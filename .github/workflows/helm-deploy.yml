@@ -55,7 +55,7 @@ jobs:
       # Baking the helm chart to generate the manifests to deploy
       - uses: azure/k8s-bake@v1
         with:
-          renderEngine: "helm3"
+          renderEngine: "helm2"
           helmChart: "./build/helm/wssbot/"
           helm-version: "latest"
         id: bake
