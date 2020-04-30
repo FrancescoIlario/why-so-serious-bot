@@ -39,7 +39,7 @@ jobs:
 
       # Container build and push to a Azure Container registry (ACR)
       - run: |
-          docker build . -t ${{ env.REGISTRY_NAME }}/wss-bot:${{ github.sha }}
+          docker build -t ${{ env.REGISTRY_NAME }}/wss-bot:${{ github.sha }} -f build/docker/bot/Dockerfile .
           docker push ${{ env.REGISTRY_NAME }}/wss-bot:${{ github.sha }}
 
       # Set the target Azure Kubernetes Service (AKS) cluster.
