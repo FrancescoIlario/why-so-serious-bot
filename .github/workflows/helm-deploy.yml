@@ -58,6 +58,7 @@ jobs:
           renderEngine: "helm2"
           helmChart: "./build/helm/wss-bot/"
           helm-version: "latest"
+          namespace: ${{ env.NAMESPACE }}
         id: bake
 
       # Deploy app to AKS
