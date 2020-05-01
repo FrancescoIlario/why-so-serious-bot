@@ -1,0 +1,74 @@
+# This workflow will build a docker container, publish it to Azure Container Registry, and deploy it to Azure Kubernetes Service using a helm chart.
+#
+# To configure this workflow:
+#
+# 1. Set up the following secrets in your workspace:
+#     a. REGISTRY_USERNAME with ACR username
+#     b. REGISTRY_PASSWORD with ACR Password
+#     c. AZURE_CREDENTIALS with the output of `az ad sp create-for-rbac --sdk-auth`
+#
+# 2. Change the values for the REGISTRY_NAME, CLUSTER_NAME, CLUSTER_RESOURCE_GROUP and NAMESPACE environment variables (below).
+
+name: Helm Deploy
+
+on:
+  push:
+    branches: [ master ]
+
+# Environment variables available to all jobs and steps in this workflow
+env:
+  REGISTRY_NAME: filario
+  CLUSTER_NAME: kube-play
+  CLUSTER_RESOURCE_GROUP: play-with-kubernetes
+  NAMESPACE: wss-bot
+
+jobs:
+  
+  build: 
+    runs-on: ubuntu-latest
+   
+    steps:
+      - uses: actions/checkout@master
+
+      # Connect to Azure Container registry (ACR)
+      - uses: azure/docker-login@v1
+        with:
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      # Container build and push to a Azure Container registry (ACR)
+      - run: |
+          docker build -t ${{ env.REGISTRY_NAME }}/wss-bot:${{ github.sha }} -f build/docker/bot/Dockerfile .
+          docker push ${{ env.REGISTRY_NAME }}/wss-bot:${{ github.sha }}
+
+      # Set the target Azure Kubernetes Service (AKS) cluster.
+      - uses: azure/aks-set-context@v1
+        with:
+          creds: "${{ secrets.AZURE_CREDENTIALS }}"
+          cluster-name: ${{ env.CLUSTER_NAME }}
+          resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
+
+      # Create namespace if doesn't exist
+      - run: |
+          kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o json | kubectl apply -f -
+
+      # Baking the helm chart to generate the manifests to deploy
+      - uses: azure/k8s-bake@v1
+        with:
+          renderEngine: "helm2"
+          helmChart: "./build/helm/wss-bot/"
+          helm-version: "latest"
+        id: bake
+      
+      - run: |
+          CHART_VERSION=$(helm show chart ./build/helm/wss-bot/ | grep "version: " | sed -E 's/^version: (.*?)$/\1/')
+          CHART_NAME=$(helm show chart ./build/helm/wss-bot/ | grep "name: " | sed -E 's/^name: (.*?)$/\1/')
+          
+          helm package ./build/helm/wss-bot/
+          helm upgrade --install --namespace ${{ env.NAMESPACE }} wss-bot $CHART_NAME-$CHART_VERSION.tgz
+
+      # Deploy app to AKS
+      # - uses: azure/k8s-deploy@v1
+      #   with:
+      #     manifests: ${{ steps.bake.outputs.manifestsBundle }}
+      #     namespace: ${{ env.NAMESPACE }}

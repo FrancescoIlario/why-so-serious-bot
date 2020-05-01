@@ -1,0 +1,10 @@
+replicaCount: 1
+
+name: wss-bot
+image:
+  repository: filario/wss-bot
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart version.
+  tag: latest
+secret:
+  name: wss-secret

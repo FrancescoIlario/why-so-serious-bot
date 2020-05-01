@@ -118,6 +118,9 @@ RUN apt-get update \
     && chmod a+x /usr/local/bin/docker-compose \
     && echo ${DOCKER_GUID} > /home/${USERNAME}/dockerguid \
     #
+    # Helm
+    && curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash \
+    #
     # Clean up
     && cd / \
     && apt-get autoremove -y \
