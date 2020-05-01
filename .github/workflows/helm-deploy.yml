@@ -36,7 +36,7 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
-      - uses: benjlevesque/short-sha
+      - uses: benjlevesque/short-sha@v.1.1
         id: short-sha
         with:
           length: 7
