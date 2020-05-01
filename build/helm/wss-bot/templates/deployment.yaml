@@ -32,3 +32,13 @@ spec:
               secretKeyRef:
                 name: {{ .Values.secret.name }}
                 key: face-endpoint
+          - name: WSS_VISION_SUBSCRIPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secret.name }}
+                key: vision-subscription
+          - name: WSS_VISION_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secret.name }}
+                key: vision-endpoint
