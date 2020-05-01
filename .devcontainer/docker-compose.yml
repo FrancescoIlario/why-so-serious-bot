@@ -19,6 +19,7 @@ services:
       # Forwards the local Docker socket to the container.
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/.config/gh:/home/vscode/gh:cached
+      - ~/.kube:/home/vscode/.kube:cached
 
     cap_add:
       - SYS_PTRACE
