@@ -61,10 +61,11 @@ jobs:
         id: bake
       
       - run: |
+          CHART_VERSION=$(helm show chart ./build/helm/wss-bot/ | grep "version: " | sed -E 's/^version: (.*?)$/\1/')
+          CHART_NAME=$(helm show chart ./build/helm/wss-bot/ | grep "name: " | sed -E 's/^name: (.*?)$/\1/')
+          
           helm package ./build/helm/wss-bot/
-          helm upgrade --install wss-bot \
-            $(helm show chart ./build/helm/wss-bot/ | grep "name: " | sed -E 's/^name: (.*?)$/\1/')\
-            -$(helm show chart ./build/helm/wss-bot/ | grep "version: " | sed -E 's/^version: (.*?)$/\1/').tgz
+          helm upgrade --install wss-bot $CHART_NAME-$CHART_VERSION.tgz
 
       # Deploy app to AKS
       # - uses: azure/k8s-deploy@v1
