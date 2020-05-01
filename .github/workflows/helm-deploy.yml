@@ -13,7 +13,7 @@ name: Helm Deploy
 
 on:
   push:
-    branches: [ master,  feature/k8s-helm ]
+    branches: [ master ]
 
 # Environment variables available to all jobs and steps in this workflow
 env:
