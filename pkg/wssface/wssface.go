@@ -33,20 +33,13 @@ func (s *FaceServiceClient) InvokeFace(faceContext context.Context, photo io.Rea
 	}
 
 	dFaces := *detectSingleFaces.Value
-	if numFaces := len(dFaces); numFaces == 0 {
-		return nil, fmt.Errorf("no faces identified in provided photo")
-	} else if numFaces > 1 {
-		return nil, fmt.Errorf("more than one face (more precisely %v) identified in provided photo", numFaces)
+	faces := make([]FaceDetails, len(dFaces))
+	for idx, dFace := range dFaces {
+		fd := newFaceDetails(&dFace)
+		faces[idx] = *fd
 	}
 
-	dFace := dFaces[0]
-	emotion := getEmotion(dFace.FaceAttributes)
-
-	return &FaceResult{
-		Age:       *dFace.FaceAttributes.Age,
-		Gender:    fmt.Sprintf("%s", dFace.FaceAttributes.Gender),
-		Sentiment: emotion,
-	}, nil
+	return &FaceResult{Faces: faces}, nil
 }
 
 func (s *FaceServiceClient) callFaceService(faceContext context.Context, photo io.ReadCloser) (face.ListDetectedFace, error) {
@@ -63,7 +56,25 @@ func (s *FaceServiceClient) callFaceService(faceContext context.Context, photo i
 
 // FaceResult result of the FaceAPI
 type FaceResult struct {
+	Faces []FaceDetails
+}
+
+//FaceDetails Details about one face
+type FaceDetails struct {
 	Age       float64
 	Sentiment Emotion
 	Gender    string
+}
+
+func newFaceDetails(df *face.DetectedFace) *FaceDetails {
+	attributes := df.FaceAttributes
+	age := *attributes.Age
+	gender := fmt.Sprintf("%s", attributes.Gender)
+	emotion := getEmotion(attributes)
+
+	return &FaceDetails{
+		Age:       age,
+		Gender:    gender,
+		Sentiment: emotion,
+	}
 }
