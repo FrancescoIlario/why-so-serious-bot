@@ -6,6 +6,7 @@ import (
 	"github.com/FrancescoIlario/why-so-serious-bot/internal/bot"
 	"github.com/FrancescoIlario/why-so-serious-bot/internal/conf"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssface"
+	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wsssentiment"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssvision"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -32,6 +33,11 @@ func main() {
 		log.Fatalf("error retrieving vision service configuration: %v", err)
 	}
 
+	textAnalyticsConf, err := wsssentiment.BuildConfigurationFromEnvs()
+	if err != nil {
+		log.Fatalf("error retrieving text analitycs service configuration: %v", err)
+	}
+
 	// instantiate bot
 	settings := tb.Settings{
 		Token: *token,
@@ -40,7 +46,7 @@ func main() {
 		},
 	}
 
-	fbot, err := bot.New(settings, *faceConf, *visionConf)
+	fbot, err := bot.New(settings, *faceConf, *visionConf, *textAnalyticsConf)
 	if err != nil {
 		log.Printf("can not instantiate bot: %v", err)
 	}

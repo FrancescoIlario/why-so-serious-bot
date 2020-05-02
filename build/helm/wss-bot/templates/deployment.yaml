@@ -42,3 +42,13 @@ spec:
               secretKeyRef:
                 name: {{ .Values.secret.name }}
                 key: vision-endpoint
+          - name: WSS_TEXTANALYTICS_SUBSCRIPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secret.name }}
+                key: textanalytics-subscription
+          - name: WSS_TEXTANALYTICS_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secret.name }}
+                key: textanalytics-endpoint

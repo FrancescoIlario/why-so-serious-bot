@@ -18,3 +18,39 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
+        env:
+          - name: WSS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: token
+          - name: WSS_FACE_SUBSCRIPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: face-subscription
+          - name: WSS_FACE_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: face-endpoint
+          - name: WSS_VISION_SUBSCRIPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: vision-subscription
+          - name: WSS_VISION_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: vision-endpoint
+          - name: WSS_TEXTANALYTICS_SUBSCRIPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: textanalytics-subscription
+          - name: WSS_TEXTANALYTICS_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: textanalytics-endpoint
