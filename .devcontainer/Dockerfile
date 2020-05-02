@@ -15,7 +15,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
-ARG DOCKER_GUID
+ARG DOCKER_GUID=966
 
 ARG GHCLI_VERSION=0.7.0
 
@@ -71,6 +71,7 @@ RUN apt-get update \
     && apt-get install -y sudo \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME \
+    #
     # zsh, oh-my-zsh and tools
     && apt-get install -y vim less zsh tree \
     && mkdir -p /tmp/zsh \
@@ -82,12 +83,23 @@ RUN apt-get update \
     && echo 'alias l="ls -l " >> /home/${USERNAME}/.zshrc' \
     && echo 'alias la="ls -al " >> /home/${USERNAME}/.zshrc' \
     && echo 'alias l.="ls -al " >> /home/${USERNAME}/.zshrc' \
+    && sed -i 's/^plugins=\(.*\)$/plugins=(git kubectl minikube helm github golang docker)/' /home/${USERNAME}/.zshrc \
+    #
+    # Install Starship
+    && mkdir -p /tmp/starship \
+    && cd /tmp/starship \
+    && curl -ssSL https://starship.rs/install.sh -o install.sh \
+    && chmod +x install.sh \
+    && ./install.sh -y \
+    && echo "# ~/.zshrc" >> /home/${USERNAME}/.zshrc \
+    && echo "eval \"$(starship init zsh)\"" >> /home/${USERNAME}/.zshrc \
     #
     # GitHub CLI
     && mkdir -p /tmp/gh \
     && cd /tmp/gh \
     && curl -sLO  https://github.com/cli/cli/releases/download/v0.7.0/gh_${GHCLI_VERSION}_linux_amd64.deb \
     && apt install ./gh_${GHCLI_VERSION}_linux_amd64.deb \
+    && echo "eval $(gh completion --shell zsh)" >> /home/${USERNAME}/.zshrc \
     #
     # Permit VS Code find the installed extensions after container rebuild
     && mkdir -p /home/$USERNAME/.vscode-server/extensions \
@@ -100,6 +112,16 @@ RUN apt-get update \
     && curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl \
     && chmod +x kubectl \
     && mv ./kubectl /usr/bin/kubectl \
+    #
+    ## kubens/kubectx: https://github.com/ahmetb/kubectx
+    && apt install -y kubectx \
+    #
+    ## kubectl alias
+    && curl -sSL https://raw.githubusercontent.com/ahmetb/kubectl-alias/master/.kubectl_aliases -o /home/${USERNAME}/.kubectl_aliases \
+    && echo "# Kubectl aliases from https://github.com/ahmetb/kubectl-aliases" >> /home/${USERNAME}/.zshrc \
+    && echo "[ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases" >> /home/${USERNAME}/.zshrc \
+    && echo "# watch workaround for kubectl shortcuts" >> /home/${USERNAME}/.zshrc \
+    && echo "alias watch=\"watch \"" >> /home/${USERNAME}/.zshrc \
     #
     # Add write permission for /go/pkg
     && chown -R ${USERNAME}:${USERNAME} /go \
@@ -120,14 +142,18 @@ RUN apt-get update \
     #
     # Helm
     && curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash \
+    # 
+    # Install Azure Client
+    && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
+    && echo "# Azure cli completion " >> /home/${USERNAME}/.zshrc \
+    && echo "autoload -U +X bashcompinit && bashcompinit" >> /home/${USERNAME}/.zshrc \
+    && echo "source /etc/bash_completion.d/azure-cli" >> /home/${USERNAME}/.zshrc \
     #
     # Clean up
     && cd / \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* /go/src /tmp/* 
-
-ENV ZSH_THEME=agnoster
 
 # Update this to "on" or "off" as appropriate
 ENV GO111MODULE=auto
