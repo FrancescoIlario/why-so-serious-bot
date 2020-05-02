@@ -122,6 +122,7 @@ RUN apt-get update \
     && echo "[ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases" >> /home/${USERNAME}/.zshrc \
     && echo "# watch workaround for kubectl shortcuts" >> /home/${USERNAME}/.zshrc \
     && echo "alias watch=\"watch \"" >> /home/${USERNAME}/.zshrc \
+    && chown ${USER_UID}:${USER_GID} /home/${USERNAME}/.kubectl_aliases \
     #
     # Add write permission for /go/pkg
     && chown -R ${USERNAME}:${USERNAME} /go \
@@ -139,6 +140,7 @@ RUN apt-get update \
     && curl -sSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
     && chmod a+x /usr/local/bin/docker-compose \
     && echo ${DOCKER_GUID} > /home/${USERNAME}/dockerguid \
+    && chown ${USER_UID}:${USER_GID} /home/${USERNAME}/dockerguid \
     #
     # Helm
     && curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash \
@@ -148,6 +150,10 @@ RUN apt-get update \
     && echo "# Azure cli completion " >> /home/${USERNAME}/.zshrc \
     && echo "autoload -U +X bashcompinit && bashcompinit" >> /home/${USERNAME}/.zshrc \
     && echo "source /etc/bash_completion.d/azure-cli" >> /home/${USERNAME}/.zshrc \
+    #
+    ## Initialize user .config dir
+    && mkdir -p /home/${USERNAME}/.config \
+    && chown ${USER_UID}:${USER_GID} /home/${USERNAME}/.config \
     #
     # Clean up
     && cd / \
