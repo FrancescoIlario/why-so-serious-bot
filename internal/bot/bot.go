@@ -5,6 +5,7 @@ import (
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssface"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssmoderator"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wsssentiment"
+	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wsstranslator"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssvision"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -16,6 +17,7 @@ type Bot struct {
 	visionCli        wssvision.VisionServiceClient
 	textAnalyticsCli wsssentiment.TextAnalyticsServiceClient
 	moderatorCli     wssmoderator.ContentModeratorServiceClient
+	translatorCli    wsstranslator.TranslatorServiceClient
 }
 
 //New Bot constructor
@@ -23,7 +25,8 @@ func New(tbotSettings tb.Settings,
 	faceConf wssface.Configuration,
 	visionConf wssvision.Configuration,
 	textAnalyticsConf wsssentiment.Configuration,
-	moderatorConf wssmoderator.Configuration) (*Bot, error) {
+	moderatorConf wssmoderator.Configuration,
+	translatorConf wsstranslator.Configuration) (*Bot, error) {
 	tbot, err := tb.NewBot(tbotSettings)
 	if err != nil {
 		return nil, err
@@ -35,10 +38,12 @@ func New(tbotSettings tb.Settings,
 		visionCli:        *wssvision.NewVisionServiceClient(visionConf),
 		textAnalyticsCli: *wsssentiment.NewTextAnalyticsServiceClient(textAnalyticsConf),
 		moderatorCli:     *wssmoderator.NewContentModeratorServiceClient(moderatorConf),
+		translatorCli:    *wsstranslator.NewTranslatorServiceClient(translatorConf),
 	}
 
 	tbot.Handle(tb.OnPhoto, bot.onPhoto)
 	tbot.Handle(tb.OnText, tglog.Wrap(bot.onText))
+	tbot.Handle("/translate", bot.translate)
 
 	return bot, nil
 }
