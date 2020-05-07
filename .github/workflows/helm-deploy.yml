@@ -64,6 +64,7 @@ jobs:
           CHART_VERSION=$(helm show chart ./build/helm/wss-bot/ | grep "version: " | sed -E 's/^version: (.*?)$/\1/')
           CHART_NAME=$(helm show chart ./build/helm/wss-bot/ | grep "name: " | sed -E 's/^name: (.*?)$/\1/')
           
+          helm lint ./build/helm/wss-bot/
           helm package ./build/helm/wss-bot/
           helm upgrade --install --namespace ${{ env.NAMESPACE }} wss-bot $CHART_NAME-$CHART_VERSION.tgz --set image.tag=${{ env.SHA }}
 
