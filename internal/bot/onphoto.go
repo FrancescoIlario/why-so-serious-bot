@@ -8,6 +8,7 @@ import (
 	"log"
 
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssface"
+	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssmoderator"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -25,16 +26,21 @@ func (b *Bot) onPhoto(m *tb.Message) {
 		return
 	}
 
-	faceContext := context.Background()
-	rct := ioutil.NopCloser(bytes.NewReader(image))
-	defer rct.Close()
-	faceResult, err := b.faceCli.InvokeFace(faceContext, rct)
-	if err != nil {
-		log.Printf("error invoking face API: %v", err)
-		b.tbot.Send(m.Chat, err.Error())
-		return
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	mChan := b.invokeModeratorAPI(ctx, m, image)
+	frChan := b.invokeFaceAPI(ctx, m, image)
+
+	if moderatorResult := <-mChan; moderatorResult != nil {
+		if moderatorResult.Adult || moderatorResult.Racy {
+			b.tbot.Send(m.Chat, "This content is inappropriate: it seems to have adult or racy content")
+			return
+		}
 	}
 
+	faceResult := <-frChan
 	faces := faceResult.Faces
 	switch len(faces) {
 	case 0:
@@ -47,6 +53,40 @@ func (b *Bot) onPhoto(m *tb.Message) {
 		b.processGroupPhoto(m.Chat, faces)
 		break
 	}
+}
+
+func (b *Bot) invokeModeratorAPI(ctx context.Context, m *tb.Message, image []byte) chan *wssmoderator.ContentModeratorPhotoResult {
+	mChan := make(chan *wssmoderator.ContentModeratorPhotoResult)
+	go func() {
+		defer close(mChan)
+		rct := ioutil.NopCloser(bytes.NewReader(image))
+		defer rct.Close()
+		moderatorResult, err := b.moderatorCli.InvokeContentModeratorPhoto(ctx, rct)
+		if err != nil {
+			log.Printf("error invoking face API: %v", err)
+		}
+		mChan <- moderatorResult
+	}()
+
+	return mChan
+}
+
+func (b *Bot) invokeFaceAPI(ctx context.Context, m *tb.Message, image []byte) chan *wssface.FaceResult {
+	frChan := make(chan *wssface.FaceResult)
+	go func() {
+		defer close(frChan)
+
+		rct := ioutil.NopCloser(bytes.NewReader(image))
+		defer rct.Close()
+		faceResult, err := b.faceCli.InvokeFace(ctx, rct)
+
+		if err != nil {
+			log.Printf("error invoking face API: %v", err)
+		}
+		frChan <- faceResult
+	}()
+
+	return frChan
 }
 
 func (b *Bot) processGroupPhoto(chat *tb.Chat, faces []wssface.FaceDetails) {
