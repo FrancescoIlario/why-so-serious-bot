@@ -7,6 +7,7 @@ import (
 
 //Configuration structure for the Translator service configuration
 type Configuration struct {
+	TranslatorRegion       string
 	TranslatorSubscription string
 	ServiceEnpoint         string
 }
@@ -16,23 +17,31 @@ const (
 	TranslatorSubscriptionKey = "WSS_TRANSLATOR_SUBSCRIPTION_KEY"
 	//TranslatorEndpointKey Azure Translator Endpoint env key
 	TranslatorEndpointKey = "WSS_TRANSLATOR_ENDPOINT"
+	//TranslatorRegionKey Azure Translator Region env key
+	TranslatorRegionKey = "WSS_TRANSLATOR_REGION"
 )
 
 //BuildConfigurationFromEnvs builds the configuration from env variables
 func BuildConfigurationFromEnvs() (*Configuration, error) {
-	sub, err := getTranslatorSubscription()
+	subscription, err := getTranslatorSubscription()
 	if err != nil {
 		return nil, err
 	}
 
-	endStr, err := getTranslatorEndpoint()
+	endpoint, err := getTranslatorEndpoint()
+	if err != nil {
+		return nil, err
+	}
+
+	region, err := getTranslatorRegion()
 	if err != nil {
 		return nil, err
 	}
 
 	return &Configuration{
-		TranslatorSubscription: *sub,
-		ServiceEnpoint:         *endStr,
+		TranslatorRegion:       *region,
+		TranslatorSubscription: *subscription,
+		ServiceEnpoint:         *endpoint,
 	}, nil
 }
 
@@ -50,4 +59,12 @@ func getTranslatorEndpoint() (*string, error) {
 	}
 
 	return nil, fmt.Errorf("translator subscription env key (%s) not set", TranslatorEndpointKey)
+}
+
+func getTranslatorRegion() (*string, error) {
+	if v := os.Getenv(TranslatorRegionKey); v != "" {
+		return &v, nil
+	}
+
+	return nil, fmt.Errorf("translator region env key (%s) not set", TranslatorRegionKey)
 }

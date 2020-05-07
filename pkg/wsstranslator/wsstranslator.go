@@ -16,7 +16,10 @@ type TranslatorServiceClient struct {
 //NewTranslatorServiceClient TranslatorServiceClient constructor
 func NewTranslatorServiceClient(conf Configuration) *TranslatorServiceClient {
 	client := translatortext.NewTranslatorClient(conf.ServiceEnpoint)
-	client.Authorizer = autorest.NewCognitiveServicesAuthorizer(conf.TranslatorSubscription)
+	client.Authorizer = autorest.NewAPIKeyAuthorizer(map[string]interface{}{
+		"Ocp-Apim-Subscription-Key":    conf.TranslatorSubscription,
+		"Ocp-Apim-Subscription-Region": conf.TranslatorRegion,
+	}, nil)
 
 	return &TranslatorServiceClient{
 		conf:          conf,

@@ -56,7 +56,7 @@ func extractLang(payload string) *string {
 	}
 
 	if submatches := exp.FindStringSubmatch(payload); len(submatches) >= 1 {
-		return &submatches[0]
+		return &submatches[1]
 	}
 	return nil
 }
