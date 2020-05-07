@@ -59,16 +59,7 @@ jobs:
       # Create namespace if doesn't exist
       - run: |
           kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o json | kubectl apply -f -
-
-      # Baking the helm chart to generate the manifests to deploy
-      - uses: azure/k8s-bake@v1
-        with:
-          renderEngine: "helm"
-          helmChart: "./build/helm/wss-bot/"
-          helm-version: "latest"
-          silent: "false"
-        id: bake
-      
+    
       - run: |
           CHART_VERSION=$(helm show chart ./build/helm/wss-bot/ | grep "version: " | sed -E 's/^version: (.*?)$/\1/')
           CHART_NAME=$(helm show chart ./build/helm/wss-bot/ | grep "name: " | sed -E 's/^name: (.*?)$/\1/')
