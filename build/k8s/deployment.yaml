@@ -54,3 +54,13 @@ spec:
               secretKeyRef:
                 name: wss-secret
                 key: textanalytics-endpoint
+          - name: WSS_CONTENTMODERATOR_SUBSCRIPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: moderator-subscription
+          - name: WSS_CONTENTMODERATOR_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: moderator-endpoint
