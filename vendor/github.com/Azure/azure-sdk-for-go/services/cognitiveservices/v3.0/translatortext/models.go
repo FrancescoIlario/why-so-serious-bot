@@ -222,8 +222,8 @@ type TranslateResultAllItem struct {
 
 // TranslateResultAllItemDetectedLanguage ...
 type TranslateResultAllItemDetectedLanguage struct {
-	Language *string `json:"language,omitempty"`
-	Score    *int32  `json:"score,omitempty"`
+	Language *string  `json:"language,omitempty"`
+	Score    *float32 `json:"score,omitempty"`
 }
 
 // TranslateResultAllItemTranslationsItem ...
