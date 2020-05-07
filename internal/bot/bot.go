@@ -43,7 +43,7 @@ func New(tbotSettings tb.Settings,
 
 	tbot.Handle(tb.OnPhoto, bot.onPhoto)
 	tbot.Handle(tb.OnText, tglog.Wrap(bot.onText))
-	tbot.Handle("/translate", bot.translate)
+	tbot.Handle("/translate", tglog.Wrap(bot.translate))
 
 	return bot, nil
 }

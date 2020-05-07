@@ -11,9 +11,9 @@ import (
 
 const langPattern = "-to:([A-z]{2}) "
 
-func (b *Bot) translate(m *tb.Message) {
+func (b *Bot) translate(m *tb.Message) (*tb.Message, error) {
 	if !m.Private() {
-		return
+		return nil, nil
 	}
 
 	language := extractLang(m.Payload)
@@ -26,11 +26,11 @@ func (b *Bot) translate(m *tb.Message) {
 	res, err := b.translatorCli.InvokeTranslator(ctx, message, language)
 	if err != nil {
 		log.Printf("error invoking translator service: %v", err)
-		return
+		return nil, err
 	}
 
 	response := generateTranslationResponse(res)
-	b.tbot.Send(m.Chat, response)
+	return b.tbot.Send(m.Chat, response)
 }
 
 func generateTranslationResponse(res *wsstranslator.TranslatorResult) string {
