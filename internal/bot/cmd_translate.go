@@ -9,7 +9,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-const langPattern = "-to:([A-z]{2}) "
+const langPattern = "-to:((.*) ) "
 
 func (b *Bot) translate(m *tb.Message) (*tb.Message, error) {
 	if !m.Private() {
@@ -19,7 +19,8 @@ func (b *Bot) translate(m *tb.Message) (*tb.Message, error) {
 	language := extractLang(m.Payload)
 	message := m.Payload
 	if language != nil {
-		message = message[7:]
+		slack := 4 + len(*language) + 1
+		message = message[slack:]
 	}
 
 	ctx := context.Background()
