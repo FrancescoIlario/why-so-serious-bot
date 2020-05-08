@@ -1,4 +1,4 @@
-# github.com/Azure/azure-sdk-for-go v42.0.0+incompatible
+# github.com/Azure/azure-sdk-for-go v42.1.0+incompatible
 ## explicit
 github.com/Azure/azure-sdk-for-go/services/cognitiveservices/v1.0/contentmoderator
 github.com/Azure/azure-sdk-for-go/services/cognitiveservices/v1.0/face
