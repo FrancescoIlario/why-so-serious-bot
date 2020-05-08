@@ -111,9 +111,9 @@ type ErrorMessageError struct {
 // LanguagesResult example of a successful languages request
 type LanguagesResult struct {
 	autorest.Response `json:"-"`
-	Translation       *LanguagesResultTranslation     `json:"translation,omitempty"`
-	Transliteration   *LanguagesResultTransliteration `json:"transliteration,omitempty"`
-	Dictionary        *LanguagesResultDictionary      `json:"dictionary,omitempty"`
+	Translation       *map[string]LanguagesResultTranslationLanguageCode `json:"translation,omitempty"`
+	Transliteration   *map[string]LanguagesResultTransliteration         `json:"transliteration,omitempty"`
+	Dictionary        *map[string]LanguagesResultDictionary              `json:"dictionary,omitempty"`
 }
 
 // LanguagesResultDictionary ...
