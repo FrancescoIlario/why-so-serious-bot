@@ -9,7 +9,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-const langPattern = "-to:((.*) ) "
+const langPattern = "-to:(.*?) "
 
 func (b *Bot) translate(m *tb.Message) (*tb.Message, error) {
 	if !m.Private() {
