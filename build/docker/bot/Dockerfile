@@ -19,7 +19,6 @@ COPY . .
 
 # Build the binary
 RUN mkdir -p /app/build \
-    && go get -u ./... \
     && CGO_ENABLED=0 go build \
 		-ldflags="-w -s" \
 		-a \

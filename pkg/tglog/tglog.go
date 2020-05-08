@@ -18,8 +18,7 @@ func Wrap(onText func(*tb.Message) (*tb.Message, error)) func(*tb.Message) {
 
 		resp, err := onText(m)
 		if err != nil {
-			log.Printf("[%d] error sending response (%v): %v", m.ID, resp.Text, err)
-			return
+			log.Printf("[%d] error sending response: %v", m.ID, err)
 		}
 
 		if resp == nil {
