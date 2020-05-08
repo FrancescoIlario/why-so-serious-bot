@@ -45,6 +45,9 @@ func New(tbotSettings tb.Settings,
 	tbot.Handle(tb.OnText, tglog.Wrap(bot.onText))
 	tbot.Handle("/translate", tglog.Wrap(bot.translate))
 
+	tbot.Handle("/l", tglog.Wrap(bot.languages))
+	tbot.Handle("/languages", tglog.Wrap(bot.languages))
+
 	return bot, nil
 }
 
