@@ -85,6 +85,6 @@ spec:
                 name: {{ .Values.secret.name }}
                 key: formrecognizer-endpoint
           - name: WSS_FORMRECOGNIZER_RETRIES_MAXATTEMPTS
-            value: {{ .Values.services.formrecognizer.retries.maxattempts }}
+            value: {{ .Values.services.formrecognizer.retries.maxattempts | quote }}
           - name: WSS_FORMRECOGNIZER_RETRIES_INTERVAL
-            value: {{ .Values.services.formrecognizer.retries.interval }}
+            value: {{ .Values.services.formrecognizer.retries.interval | quote }}
