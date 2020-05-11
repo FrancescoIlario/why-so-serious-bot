@@ -64,3 +64,15 @@ spec:
               secretKeyRef:
                 name: wss-secret
                 key: moderator-endpoint
+          - name: WSS_TRANSLATOR_SUBSCRIPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: translator-subscription
+          - name: WSS_TRANSLATOR_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: translator-endpoint
+          - name: WSS_TRANSLATOR_REGION
+            value: westeurope
