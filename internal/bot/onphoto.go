@@ -102,23 +102,84 @@ func (b *Bot) processSingleFacePhoto(chat *tb.Chat, face wssface.FaceDetails) {
 }
 
 func (b *Bot) processNoFacePhoto(chat *tb.Chat, image []byte) {
-	visionContext := context.Background()
-	rct := ioutil.NopCloser(bytes.NewReader(image))
-	defer rct.Close()
-	res, err := b.visionCli.InvokeVision(visionContext, rct)
-	if err != nil {
-		log.Printf(`error invoking computer vision service: %v`, err)
+	ctx := context.Background()
+	visionChan, formRecognizerChan := make(chan bool), make(chan bool)
+	defer func() {
+		close(visionChan)
+		close(formRecognizerChan)
+	}()
+
+	go func() {
+		rct := ioutil.NopCloser(bytes.NewReader(image))
+		chanres := true
+		defer func() {
+			rct.Close()
+			visionChan <- chanres
+		}()
+
+		res, err := b.visionCli.InvokeVision(ctx, rct)
+		if err != nil {
+			log.Printf(`error invoking computer vision service: %v`, err)
+			b.tbot.Send(chat, `This picture makes me feel a sick! I'm sorry, I can't handle this request!`)
+			chanres = false
+			return
+		}
+
+		if res.Description == nil {
+			b.tbot.Send(chat, `I'm sorry but I can't figure out what this picture represents`)
+			return
+		}
+
+		message := fmt.Sprintf("It seems %s", *res.Description)
+		b.tbot.Send(chat, message)
+	}()
+
+	go func() {
+		rct := ioutil.NopCloser(bytes.NewReader(image))
+		chanres := true
+		defer func() {
+			rct.Close()
+			formRecognizerChan <- chanres
+		}()
+
+		res, err := b.formRecognizerCli.InvokeFormRecognizer(ctx, rct)
+		if err != nil {
+			log.Printf(`error invoking form recognizer service: %v`, err)
+			chanres = false
+			return
+		}
+
+		if !res.IsSucceeded() {
+			b.tbot.Send(chat, `No receipt found in photo`)
+			return
+		}
+
+		var message string
+		total := res.Total()
+		if total != nil {
+			message = fmt.Sprintf("It seems you spent %s", *total)
+		} else {
+			message = fmt.Sprintf("Can't figure out how much you spent")
+		}
+
+		if merchant := res.MerchantName(); merchant != nil {
+			message += fmt.Sprintf(" at %s", *merchant)
+		}
+		if address := res.MerchantAddress(); address != nil {
+			message += fmt.Sprintf(" in %s", *address)
+		}
+		if date := res.TransactionDate(); date != nil {
+			message += fmt.Sprintf(" in date %s", *date)
+		}
+
+		b.tbot.Send(chat, message)
+	}()
+
+	vres := <-visionChan
+	frres := <-formRecognizerChan
+	if !vres && !frres {
 		b.tbot.Send(chat, `This picture makes me feel a sick! I'm sorry, I can't handle this request!`)
-		return
 	}
-
-	if res.Description == nil {
-		b.tbot.Send(chat, `I'm sorry but I can't figure out what this picture represents`)
-		return
-	}
-
-	message := fmt.Sprintf("It seems %s", *res.Description)
-	b.tbot.Send(chat, message)
 }
 
 func (b *Bot) genderGreet(gender string) string {
