@@ -76,3 +76,17 @@ spec:
                 key: translator-endpoint
           - name: WSS_TRANSLATOR_REGION
             value: westeurope
+          - name: WSS_FORMRECOGNIZER_SUBSCRIPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: formrecognizer-subscription
+          - name: WSS_FORMRECOGNIZER_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: wss-secret
+                key: formrecognizer-endpoint
+          - name: WSS_FORMRECOGNIZER_RETRIES_MAXATTEMPTS
+            value: "10"
+          - name: WSS_FORMRECOGNIZER_RETRIES_INTERVAL
+            value: "1000" # milliseconds
