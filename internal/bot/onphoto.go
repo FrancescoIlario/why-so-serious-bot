@@ -45,13 +45,10 @@ func (b *Bot) onPhoto(m *tb.Message) {
 	switch len(faces) {
 	case 0:
 		b.processNoFacePhoto(m.Chat, image)
-		break
 	case 1:
 		b.processSingleFacePhoto(m.Chat, faces[0])
-		break
 	default:
 		b.processGroupPhoto(m.Chat, faces)
-		break
 	}
 }
 
@@ -159,17 +156,17 @@ func (b *Bot) processNoFacePhoto(chat *tb.Chat, image []byte) {
 		if total != nil {
 			message = fmt.Sprintf("It seems you spent %s", *total)
 		} else {
-			message = fmt.Sprintf("Can't figure out how much you spent")
+			message = "Can't figure out how much you spent"
 		}
 
 		if merchant := res.MerchantName(); merchant != nil {
-			message += fmt.Sprintf(" at %s", *merchant)
+			message += " at " + *merchant
 		}
 		if address := res.MerchantAddress(); address != nil {
-			message += fmt.Sprintf(" in %s", *address)
+			message += " in " + *address
 		}
 		if date := res.TransactionDate(); date != nil {
-			message += fmt.Sprintf(" in date %s", *date)
+			message += " in date " + *date
 		}
 
 		b.tbot.Send(chat, message)

@@ -2,7 +2,6 @@ package wssface
 
 import (
 	"context"
-	"fmt"
 	"io"
 
 	"github.com/Azure/azure-sdk-for-go/services/cognitiveservices/v1.0/face"
@@ -69,7 +68,7 @@ type FaceDetails struct {
 func newFaceDetails(df *face.DetectedFace) *FaceDetails {
 	attributes := df.FaceAttributes
 	age := *attributes.Age
-	gender := fmt.Sprintf("%s", attributes.Gender)
+	gender := string(attributes.Gender)
 	emotion := getEmotion(attributes)
 
 	return &FaceDetails{

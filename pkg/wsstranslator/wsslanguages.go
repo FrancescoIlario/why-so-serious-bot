@@ -19,7 +19,7 @@ func (s *TranslatorServiceClient) InvokeLanguages(LanguagesContext context.Conte
 	languages, counter := make([]Language, len(translations)), 0
 	for k, v := range *res.Translation {
 		var name string
-		if v.Name != nil {
+		if v.NativeName != nil {
 			name = *v.NativeName
 		} else if v.Name != nil {
 			name = *v.Name
