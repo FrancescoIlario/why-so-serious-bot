@@ -74,3 +74,17 @@ spec:
                 key: translator-endpoint
           - name: WSS_TRANSLATOR_REGION
             value: {{ .Values.services.translator.region }}
+          - name: WSS_FORMRECOGNIZER_SUBSCRIPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secret.name }}
+                key: formrecognizer-subscription
+          - name: WSS_FORMRECOGNIZER_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secret.name }}
+                key: formrecognizer-endpoint
+          - name: WSS_FORMRECOGNIZER_RETRIES_MAXATTEMPTS
+            value: {{ .Values.services.formrecognizer.retries.maxattempts }}
+          - name: WSS_FORMRECOGNIZER_RETRIES_INTERVAL
+            value: {{ .Values.services.formrecognizer.retries.interval }}
