@@ -8,6 +8,7 @@ import (
 	"github.com/FrancescoIlario/why-so-serious-bot/internal/bot"
 	"github.com/FrancescoIlario/why-so-serious-bot/internal/conf"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssface"
+	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssformrecognizer"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssmoderator"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wsssentiment"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wsstranslator"
@@ -16,13 +17,14 @@ import (
 )
 
 type configurations struct {
-	pollerInterval    *time.Duration
-	token             *string
-	faceConf          *wssface.Configuration
-	visionConf        *wssvision.Configuration
-	textAnalyticsConf *wsssentiment.Configuration
-	moderatorConf     *wssmoderator.Configuration
-	translatorConf    *wsstranslator.Configuration
+	pollerInterval     *time.Duration
+	token              *string
+	faceConf           *wssface.Configuration
+	visionConf         *wssvision.Configuration
+	textAnalyticsConf  *wsssentiment.Configuration
+	moderatorConf      *wssmoderator.Configuration
+	translatorConf     *wsstranslator.Configuration
+	formRecognizerConf *wssformrecognizer.Configuration
 }
 
 func main() {
@@ -40,7 +42,8 @@ func main() {
 	}
 
 	fbot, err := bot.New(settings, *conf.faceConf, *conf.visionConf,
-		*conf.textAnalyticsConf, *conf.moderatorConf, *conf.translatorConf)
+		*conf.textAnalyticsConf, *conf.moderatorConf,
+		*conf.translatorConf, *conf.formRecognizerConf)
 	if err != nil {
 		log.Printf("can not instantiate bot: %v", err)
 	}
@@ -90,13 +93,19 @@ func getConfigurations() (*configurations, error) {
 		return nil, fmt.Errorf("error retrieving translator service configuration: %v", err)
 	}
 
+	formRecognizerConf, err := wssformrecognizer.BuildConfigurationFromEnvs()
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving form recognizer service configuration: %v", err)
+	}
+
 	return &configurations{
-		pollerInterval:    pollerInterval,
-		token:             token,
-		faceConf:          faceConf,
-		visionConf:        visionConf,
-		textAnalyticsConf: textAnalyticsConf,
-		moderatorConf:     moderatorConf,
-		translatorConf:    translatorConf,
+		pollerInterval:     pollerInterval,
+		token:              token,
+		faceConf:           faceConf,
+		visionConf:         visionConf,
+		textAnalyticsConf:  textAnalyticsConf,
+		moderatorConf:      moderatorConf,
+		translatorConf:     translatorConf,
+		formRecognizerConf: formRecognizerConf,
 	}, nil
 }

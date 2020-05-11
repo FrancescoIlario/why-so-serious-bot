@@ -11,3 +11,7 @@ secret:
 services:
   translator:
     region: westeurope
+  formrecognizer:
+    retries:
+      maxattempts: "10"
+      interval: "1000" # milliseconds
