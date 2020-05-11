@@ -62,3 +62,15 @@ spec:
               secretKeyRef:
                 name: {{ .Values.secret.name }}
                 key: moderator-endpoint
+          - name: WSS_TRANSLATOR_SUBSCRIPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secret.name }}
+                key: translator-subscription
+          - name: WSS_TRANSLATOR_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secret.name }}
+                key: translator-endpoint
+          - name: WSS_TRANSLATOR_REGION
+            value: {{ .Values.services.translator.region }}

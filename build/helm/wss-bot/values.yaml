@@ -8,3 +8,6 @@ image:
   tag: latest
 secret:
   name: wss-secret
+services:
+  translator:
+    region: westeurope
