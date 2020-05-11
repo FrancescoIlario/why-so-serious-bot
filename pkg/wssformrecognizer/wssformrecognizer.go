@@ -64,7 +64,7 @@ func (s *FormRecognizerServiceClient) InvokeFormRecognizer(ctx context.Context, 
 	}
 
 	return nil, fmt.Errorf(
-		"No successfull response obtained after %v tentative (interval: %v)",
+		"no successfull response obtained after %v tentative (interval: %v)",
 		s.conf.Retries.MaxAttempts, s.conf.Retries.Interval)
 }
 

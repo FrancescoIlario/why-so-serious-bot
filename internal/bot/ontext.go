@@ -21,11 +21,11 @@ func (b *Bot) onText(m *tb.Message) (*tb.Message, error) {
 	taRes := <-taChan
 	if score := taRes.SentimentScore; score != nil {
 		if *score <= 0.3 {
-			message += fmt.Sprintf("I feel you a little bit upset!")
+			message += "I feel you a little bit upset!"
 		} else if *score >= 0.7 {
-			message += fmt.Sprintf("What a nice positive message! Thanks!")
+			message += "What a nice positive message! Thanks!"
 		} else {
-			message += fmt.Sprintf("Why so serious?")
+			message += "Why so serious?"
 		}
 	}
 
