@@ -1,4 +1,4 @@
-# Why So Serius Bot
+# Why So Serious Bot
 
 ![Go](https://github.com/FrancescoIlario/why-so-serious-bot/workflows/Go/badge.svg)
 
