@@ -18,6 +18,11 @@ const (
 	ContentModeratorEndpointKey = "WSS_CONTENTMODERATOR_ENDPOINT"
 )
 
+//IsValid Checks if the configuration is valid
+func (c *Configuration) IsValid() bool {
+	return c != nil && c.ContentModeratorSubscription != "" && c.ServiceEnpoint != ""
+}
+
 //BuildConfigurationFromEnvs builds the configuration from env variables
 func BuildConfigurationFromEnvs() (*Configuration, error) {
 	sub, err := getContentModeratorSubscription()

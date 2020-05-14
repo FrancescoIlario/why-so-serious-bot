@@ -17,6 +17,15 @@ type Configuration struct {
 	}
 }
 
+//IsValid Checks if the configuration is valid
+func (c *Configuration) IsValid() bool {
+	return c != nil &&
+		c.FormRecognizerSubscription != "" &&
+		c.ServiceEnpoint != "" &&
+		c.Retries.MaxAttempts >= 0 &&
+		c.Retries.Interval >= 100*time.Millisecond
+}
+
 const (
 	//FormRecognizerSubscriptionKey Azure FormRecognizer Subscription env key
 	FormRecognizerSubscriptionKey = "WSS_FORMRECOGNIZER_SUBSCRIPTION_KEY"

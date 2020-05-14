@@ -15,11 +15,14 @@ func (b *Bot) onText(m *tb.Message) (*tb.Message, error) {
 	var message string
 	ctx := context.Background()
 
-	mChan := b.invokeModeratorTextAPI(ctx, m.Text)
 	taChan := b.invokeTextAnalysisAPI(ctx, m.Text)
+	mChan := b.invokeModeratorTextAPI(ctx, m.Text)
 
 	taRes := <-taChan
-	if score := taRes.SentimentScore; score != nil {
+	if taRes == nil || taRes.SentimentScore != nil {
+		message = "Hello, unfortunately I'm not smart enough to understand your sentiments. Please provide me with empathy!"
+	} else {
+		score := taRes.SentimentScore
 		if *score <= 0.3 {
 			message += "I feel you a little bit upset!"
 		} else if *score >= 0.7 {
@@ -30,7 +33,7 @@ func (b *Bot) onText(m *tb.Message) (*tb.Message, error) {
 	}
 
 	mRes := <-mChan
-	if len(mRes.BadWords) > 0 {
+	if mRes != nil && len(mRes.BadWords) > 0 {
 		badlist := strings.Join(mRes.BadWords, ", ")
 		message += fmt.Sprintf("\nHowever, you should avoid to use bad words like: %s.", badlist)
 	}
@@ -39,7 +42,12 @@ func (b *Bot) onText(m *tb.Message) (*tb.Message, error) {
 }
 
 func (b *Bot) invokeModeratorTextAPI(ctx context.Context, text string) chan *wssmoderator.ContentModeratorTextResult {
-	mChan := make(chan *wssmoderator.ContentModeratorTextResult)
+	mChan := make(chan *wssmoderator.ContentModeratorTextResult, 1)
+	if b.moderatorCli == nil {
+		close(mChan)
+		return mChan
+	}
+
 	go func() {
 		defer close(mChan)
 		moderatorResult, err := b.moderatorCli.InvokeContentModeratorText(ctx, text)
@@ -54,6 +62,11 @@ func (b *Bot) invokeModeratorTextAPI(ctx context.Context, text string) chan *wss
 
 func (b *Bot) invokeTextAnalysisAPI(ctx context.Context, text string) chan *wsssentiment.TextAnalyticsResult {
 	taChan := make(chan *wsssentiment.TextAnalyticsResult)
+	if b.textAnalyticsCli == nil {
+		defer close(taChan)
+		return taChan
+	}
+
 	go func() {
 		defer close(taChan)
 		res, err := b.textAnalyticsCli.InvokeTextAnalytics(ctx, text)

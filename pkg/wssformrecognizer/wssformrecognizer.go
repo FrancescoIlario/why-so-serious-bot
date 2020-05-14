@@ -24,17 +24,25 @@ type FormRecognizerServiceClient struct {
 }
 
 //NewFormRecognizerServiceClient FormRecognizerServiceClient constructor
-func NewFormRecognizerServiceClient(conf Configuration) *FormRecognizerServiceClient {
+func NewFormRecognizerServiceClient(conf *Configuration) *FormRecognizerServiceClient {
+	if !conf.IsValid() {
+		return nil
+	}
+
 	client := http.Client{Timeout: 10 * time.Second}
 
 	return &FormRecognizerServiceClient{
-		conf:              conf,
+		conf:              *conf,
 		formRecognizerCli: &client,
 	}
 }
 
 //InvokeFormRecognizer invokes the FormRecognizer APIs with the provided photo
 func (s *FormRecognizerServiceClient) InvokeFormRecognizer(ctx context.Context, photo io.ReadCloser) (*FormRecognizerResult, error) {
+	if s == nil {
+		return nil, fmt.Errorf("content form recognizer service client is not initialized")
+	}
+
 	req, err := s.newProcessPhotoRequest(ctx, photo)
 	if err != nil {
 		return nil, err

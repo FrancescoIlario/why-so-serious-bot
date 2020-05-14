@@ -14,12 +14,12 @@ import (
 //Bot WhySoSerious Bot implementation
 type Bot struct {
 	tbot              tb.Bot
-	faceCli           wssface.FaceServiceClient
-	visionCli         wssvision.VisionServiceClient
-	textAnalyticsCli  wsssentiment.TextAnalyticsServiceClient
-	moderatorCli      wssmoderator.ContentModeratorServiceClient
-	translatorCli     wsstranslator.TranslatorServiceClient
-	formRecognizerCli wssformrecognizer.FormRecognizerServiceClient
+	faceCli           *wssface.FaceServiceClient
+	visionCli         *wssvision.VisionServiceClient
+	textAnalyticsCli  *wsssentiment.TextAnalyticsServiceClient
+	moderatorCli      *wssmoderator.ContentModeratorServiceClient
+	translatorCli     *wsstranslator.TranslatorServiceClient
+	formRecognizerCli *wssformrecognizer.FormRecognizerServiceClient
 }
 
 //New Bot constructor
@@ -65,12 +65,12 @@ func new(c Configuration) (*Bot, error) {
 	// instantiate our bot
 	bot := &Bot{
 		tbot:              *tbot,
-		faceCli:           *wssface.NewFaceServiceClient(c.FaceConf),
-		visionCli:         *wssvision.NewVisionServiceClient(c.VisionConf),
-		textAnalyticsCli:  *wsssentiment.NewTextAnalyticsServiceClient(c.TextAnalyticsConf),
-		moderatorCli:      *wssmoderator.NewContentModeratorServiceClient(c.ModeratorConf),
-		translatorCli:     *wsstranslator.NewTranslatorServiceClient(c.TranslatorConf),
-		formRecognizerCli: *wssformrecognizer.NewFormRecognizerServiceClient(c.FormRecognizerConf),
+		faceCli:           wssface.NewFaceServiceClient(c.FaceConf),
+		visionCli:         wssvision.NewVisionServiceClient(c.VisionConf),
+		textAnalyticsCli:  wsssentiment.NewTextAnalyticsServiceClient(c.TextAnalyticsConf),
+		moderatorCli:      wssmoderator.NewContentModeratorServiceClient(c.ModeratorConf),
+		translatorCli:     wsstranslator.NewTranslatorServiceClient(c.TranslatorConf),
+		formRecognizerCli: wssformrecognizer.NewFormRecognizerServiceClient(c.FormRecognizerConf),
 	}
 	return bot, nil
 }

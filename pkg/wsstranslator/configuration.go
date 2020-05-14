@@ -21,6 +21,14 @@ const (
 	TranslatorRegionKey = "WSS_TRANSLATOR_REGION"
 )
 
+//IsValid Checks if the configuration is valid
+func (c *Configuration) IsValid() bool {
+	return c != nil &&
+		c.TranslatorSubscription != "" &&
+		c.ServiceEnpoint != "" &&
+		c.TranslatorRegion != ""
+}
+
 //BuildConfigurationFromEnvs builds the configuration from env variables
 func BuildConfigurationFromEnvs() (*Configuration, error) {
 	subscription, err := getTranslatorSubscription()

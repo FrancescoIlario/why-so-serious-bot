@@ -14,7 +14,11 @@ type FaceServiceClient struct {
 }
 
 //NewFaceServiceClient FaceServiceClient constructor
-func NewFaceServiceClient(conf Configuration) *FaceServiceClient {
+func NewFaceServiceClient(conf *Configuration) *FaceServiceClient {
+	if !conf.IsValid() {
+		return nil
+	}
+
 	// Client used for Detect Faces, Find Similar, and Verify examples.
 	client := face.NewClient(conf.FaceEndpoint)
 	client.Authorizer = autorest.NewCognitiveServicesAuthorizer(conf.FaceSubscription)
