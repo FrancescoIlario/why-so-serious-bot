@@ -17,7 +17,7 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 ARG DOCKER_GUID=966
 
-ARG GHCLI_VERSION=0.7.0
+ARG GHCLI_VERSION=0.8.0
 
 # Configure apt, install packages and tools
 RUN apt-get update \
