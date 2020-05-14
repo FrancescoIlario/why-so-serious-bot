@@ -26,3 +26,6 @@ main
 
 # local
 .local/**
+
+# .env
+.env.*
