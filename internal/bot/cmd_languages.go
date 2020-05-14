@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"sort"
 	"strings"
@@ -33,11 +34,8 @@ func (b *Bot) langsMarkdown(languages []wsstranslator.Language) *string {
 	})
 
 	for _, l := range languages {
-		sb.WriteRune('*')
-		sb.WriteString(l.Code)
-		sb.WriteString("*: ")
-		sb.WriteString(l.Name)
-		sb.WriteRune('\n')
+		langline := fmt.Sprintf("*%s*: %s\n", l.Code, l.Name)
+		sb.WriteString(langline)
 	}
 	str := sb.String()
 	return &str
