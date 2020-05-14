@@ -3,13 +3,6 @@ services:
   devenv:
     user: vscode
 
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        #  in your host machine, use "stat -c '%g' docker" to obtain the id for the group named docker
-        - DOCKER_GUID=966
-
     volumes:
       # Preserve VSCode Extensions
       - vscode_extension:/home/vscode/.vscode-server/extensions
