@@ -32,10 +32,6 @@ func main() {
 
 	// start bot
 	fbot.Start()
-
-	// wait undefinetly
-	shutdown := make(chan struct{})
-	<-shutdown
 }
 
 func getConfigurations() (*bot.Configuration, error) {
