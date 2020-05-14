@@ -97,7 +97,7 @@ RUN apt-get update \
     # GitHub CLI
     && mkdir -p /tmp/gh \
     && cd /tmp/gh \
-    && curl -sLO  https://github.com/cli/cli/releases/download/v0.7.0/gh_${GHCLI_VERSION}_linux_amd64.deb \
+    && curl -sLO  https://github.com/cli/cli/releases/download/v${GHCLI_VERSION}/gh_${GHCLI_VERSION}_linux_amd64.deb \
     && apt install ./gh_${GHCLI_VERSION}_linux_amd64.deb \
     && echo "eval $(gh completion --shell zsh)" >> /home/${USERNAME}/.zshrc \
     #
