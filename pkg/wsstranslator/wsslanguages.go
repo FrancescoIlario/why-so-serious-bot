@@ -11,13 +11,13 @@ func (s *TranslatorServiceClient) InvokeLanguages(LanguagesContext context.Conte
 		return nil, err
 	}
 
-	translations := *res.Translation
-	if translations == nil {
+	if res.Translation == nil || *res.Translation == nil {
 		return &LanguagesResult{}, nil
 	}
 
+	translations := *res.Translation
 	languages, counter := make([]Language, len(translations)), 0
-	for k, v := range *res.Translation {
+	for k, v := range translations {
 		var name string
 		if v.NativeName != nil {
 			name = *v.NativeName

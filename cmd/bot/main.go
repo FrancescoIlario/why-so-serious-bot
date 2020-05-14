@@ -3,47 +3,28 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/FrancescoIlario/why-so-serious-bot/internal/bot"
 	"github.com/FrancescoIlario/why-so-serious-bot/internal/conf"
+	"github.com/FrancescoIlario/why-so-serious-bot/pkg/envext"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssface"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssformrecognizer"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssmoderator"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wsssentiment"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wsstranslator"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssvision"
-	tb "gopkg.in/tucnak/telebot.v2"
+	"github.com/joho/godotenv"
 )
 
-type configurations struct {
-	pollerInterval     *time.Duration
-	token              *string
-	faceConf           *wssface.Configuration
-	visionConf         *wssvision.Configuration
-	textAnalyticsConf  *wsssentiment.Configuration
-	moderatorConf      *wssmoderator.Configuration
-	translatorConf     *wsstranslator.Configuration
-	formRecognizerConf *wssformrecognizer.Configuration
-}
-
 func main() {
+	loadEnvs() // load the env vars from .env file
+
 	conf, err := getConfigurations()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	// instantiate bot
-	settings := tb.Settings{
-		Token: *conf.token,
-		Poller: &tb.LongPoller{
-			Timeout: *conf.pollerInterval,
-		},
-	}
-
-	fbot, err := bot.New(settings, *conf.faceConf, *conf.visionConf,
-		*conf.textAnalyticsConf, *conf.moderatorConf,
-		*conf.translatorConf, *conf.formRecognizerConf)
+	fbot, err := bot.New(*conf)
 	if err != nil {
 		log.Printf("can not instantiate bot: %v", err)
 	}
@@ -56,56 +37,79 @@ func main() {
 	<-shutdown
 }
 
-func getConfigurations() (*configurations, error) {
-	// get configurations
-	pollerInterval, err := conf.GetPollerInterval()
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving poller interval: %v", err)
+func getConfigurations() (*bot.Configuration, error) {
+	c := bot.Configuration{}
+
+	{ // Telegram Configuration
+		pollerInterval, err := conf.GetPollerInterval()
+		if err != nil {
+			return nil, fmt.Errorf("error retrieving poller interval: %v", err)
+		}
+		c.PollerInterval = *pollerInterval
+
+		token, err := conf.GetToken()
+		if err != nil {
+			return nil, fmt.Errorf("error retrieving Telegram token: %v", err)
+		}
+		c.Token = *token
+	}
+	{ // Vision: Face
+		faceConf, err := wssface.BuildConfigurationFromEnvs()
+		if err != nil {
+			return nil, fmt.Errorf("error retrieving face service configuration: %v", err)
+		}
+		c.FaceConf = *faceConf
+	}
+	{ // Vision API
+		visionConf, err := wssvision.BuildConfigurationFromEnvs()
+		if err != nil {
+			return nil, fmt.Errorf("error retrieving vision service configuration: %v", err)
+		}
+		c.VisionConf = *visionConf
+	}
+	{ // Vision: Form Recognizer
+		formRecognizerConf, err := wssformrecognizer.BuildConfigurationFromEnvs()
+		if err != nil {
+			return nil, fmt.Errorf("error retrieving form recognizer service configuration: %v", err)
+		}
+		c.FormRecognizerConf = *formRecognizerConf
+	}
+	{ // Language Text Analytics
+		textAnalyticsConf, err := wsssentiment.BuildConfigurationFromEnvs()
+		if err != nil {
+			return nil, fmt.Errorf("error retrieving text analitycs service configuration: %v", err)
+		}
+		c.TextAnalyticsConf = *textAnalyticsConf
+	}
+	{ // Language: Translator
+		translatorConf, err := wsstranslator.BuildConfigurationFromEnvs()
+		if err != nil {
+			return nil, fmt.Errorf("error retrieving translator service configuration: %v", err)
+		}
+		c.TranslatorConf = *translatorConf
+	}
+	{ // Decision: Moderator
+		moderatorConf, err := wssmoderator.BuildConfigurationFromEnvs()
+		if err != nil {
+			return nil, fmt.Errorf("error retrieving moderator service configuration: %v", err)
+		}
+		c.ModeratorConf = *moderatorConf
 	}
 
-	token, err := conf.GetToken()
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving Telegram token: %v", err)
+	return &c, nil
+}
+
+// AppEnvKey Environment variable key where is stored the environment to use for the app
+// execution. default is `development`
+const AppEnvKey = "WSSBOT_ENV"
+
+func loadEnvs() {
+	env := envext.GetEnvOrDefault(AppEnvKey, "development")
+	godotenv.Load(".env." + env + ".local")
+	if "test" != env {
+		godotenv.Load(".env.local")
 	}
 
-	faceConf, err := wssface.BuildConfigurationFromEnvs()
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving face service configuration: %v", err)
-	}
-
-	visionConf, err := wssvision.BuildConfigurationFromEnvs()
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving vision service configuration: %v", err)
-	}
-
-	textAnalyticsConf, err := wsssentiment.BuildConfigurationFromEnvs()
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving text analitycs service configuration: %v", err)
-	}
-
-	moderatorConf, err := wssmoderator.BuildConfigurationFromEnvs()
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving moderator service configuration: %v", err)
-	}
-
-	translatorConf, err := wsstranslator.BuildConfigurationFromEnvs()
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving translator service configuration: %v", err)
-	}
-
-	formRecognizerConf, err := wssformrecognizer.BuildConfigurationFromEnvs()
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving form recognizer service configuration: %v", err)
-	}
-
-	return &configurations{
-		pollerInterval:     pollerInterval,
-		token:              token,
-		faceConf:           faceConf,
-		visionConf:         visionConf,
-		textAnalyticsConf:  textAnalyticsConf,
-		moderatorConf:      moderatorConf,
-		translatorConf:     translatorConf,
-		formRecognizerConf: formRecognizerConf,
-	}, nil
+	godotenv.Load(".env." + env)
+	godotenv.Load() // The Original .env
 }
