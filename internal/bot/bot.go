@@ -23,37 +23,55 @@ type Bot struct {
 }
 
 //New Bot constructor
-func New(tbotSettings tb.Settings,
-	faceConf wssface.Configuration,
-	visionConf wssvision.Configuration,
-	textAnalyticsConf wsssentiment.Configuration,
-	moderatorConf wssmoderator.Configuration,
-	translatorConf wsstranslator.Configuration,
-	formRecognizerConf wssformrecognizer.Configuration) (*Bot, error) {
-	tbot, err := tb.NewBot(tbotSettings)
+func New(c Configuration) (*Bot, error) {
+	bot, err := new(c)
 	if err != nil {
 		return nil, err
 	}
 
-	bot := &Bot{
-		tbot:              *tbot,
-		faceCli:           *wssface.NewFaceServiceClient(faceConf),
-		visionCli:         *wssvision.NewVisionServiceClient(visionConf),
-		textAnalyticsCli:  *wsssentiment.NewTextAnalyticsServiceClient(textAnalyticsConf),
-		moderatorCli:      *wssmoderator.NewContentModeratorServiceClient(moderatorConf),
-		translatorCli:     *wsstranslator.NewTranslatorServiceClient(translatorConf),
-		formRecognizerCli: *wssformrecognizer.NewFormRecognizerServiceClient(formRecognizerConf),
+	{ // Handler: Photo
+		bot.tbot.Handle(tb.OnPhoto, bot.onPhoto)
+	}
+	{ // Handler: Text
+		bot.tbot.Handle(tb.OnText, tglog.Wrap(bot.onText))
+	}
+	{ // Command: Translate
+		bot.tbot.Handle("/t", tglog.Wrap(bot.translate))
+		bot.tbot.Handle("/translate", tglog.Wrap(bot.translate))
+	}
+	{ // Command: Languages
+		bot.tbot.Handle("/l", tglog.Wrap(bot.languages))
+		bot.tbot.Handle("/languages", tglog.Wrap(bot.languages))
 	}
 
-	tbot.Handle(tb.OnPhoto, bot.onPhoto)
-	tbot.Handle(tb.OnText, tglog.Wrap(bot.onText))
+	return bot, nil
+}
 
-	tbot.Handle("/t", tglog.Wrap(bot.translate))
-	tbot.Handle("/translate", tglog.Wrap(bot.translate))
+func new(c Configuration) (*Bot, error) {
+	// telebot settings
+	tbSettings := tb.Settings{
+		Token: c.Token,
+		Poller: &tb.LongPoller{
+			Timeout: c.PollerInterval,
+		},
+	}
 
-	tbot.Handle("/l", tglog.Wrap(bot.languages))
-	tbot.Handle("/languages", tglog.Wrap(bot.languages))
+	// instantiate telebot bot
+	tbot, err := tb.NewBot(tbSettings)
+	if err != nil {
+		return nil, err
+	}
 
+	// instantiate our bot
+	bot := &Bot{
+		tbot:              *tbot,
+		faceCli:           *wssface.NewFaceServiceClient(c.FaceConf),
+		visionCli:         *wssvision.NewVisionServiceClient(c.VisionConf),
+		textAnalyticsCli:  *wsssentiment.NewTextAnalyticsServiceClient(c.TextAnalyticsConf),
+		moderatorCli:      *wssmoderator.NewContentModeratorServiceClient(c.ModeratorConf),
+		translatorCli:     *wsstranslator.NewTranslatorServiceClient(c.TranslatorConf),
+		formRecognizerCli: *wssformrecognizer.NewFormRecognizerServiceClient(c.FormRecognizerConf),
+	}
 	return bot, nil
 }
 
