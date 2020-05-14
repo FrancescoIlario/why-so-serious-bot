@@ -2,7 +2,7 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.106.0/containers/go
 {
 	"name": "wss-bot",
-	"dockerComposeFile": "docker-compose.yml",
+	"dockerComposeFile": ["docker-compose.yml", "docker-compose.override.yml"],
 	"service": "devenv",
 	"workspaceFolder": "/workspace",
 	// Set *default* container specific settings.json values on container create.
