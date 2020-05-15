@@ -41,6 +41,11 @@ func (b *Bot) onPhoto(m *tb.Message) {
 	}
 
 	faceResult := <-frChan
+	if faceResult == nil {
+		b.tbot.Send(m.Chat, "Hello, unfortunately I'm not smart enough to analyze photos!")
+		return
+	}
+
 	faces := faceResult.Faces
 	switch len(faces) {
 	case 0:
@@ -54,10 +59,16 @@ func (b *Bot) onPhoto(m *tb.Message) {
 
 func (b *Bot) invokeModeratorAPI(ctx context.Context, m *tb.Message, image []byte) chan *wssmoderator.ContentModeratorPhotoResult {
 	mChan := make(chan *wssmoderator.ContentModeratorPhotoResult)
+	if b.moderatorCli != nil {
+		defer close(mChan)
+		return mChan
+	}
+
 	go func() {
 		defer close(mChan)
 		rct := ioutil.NopCloser(bytes.NewReader(image))
 		defer rct.Close()
+
 		moderatorResult, err := b.moderatorCli.InvokeContentModeratorPhoto(ctx, rct)
 		if err != nil {
 			log.Printf("error invoking face API: %v", err)
@@ -70,6 +81,11 @@ func (b *Bot) invokeModeratorAPI(ctx context.Context, m *tb.Message, image []byt
 
 func (b *Bot) invokeFaceAPI(ctx context.Context, m *tb.Message, image []byte) chan *wssface.FaceResult {
 	frChan := make(chan *wssface.FaceResult)
+	if b.faceCli == nil {
+		defer close(frChan)
+		return frChan
+	}
+
 	go func() {
 		defer close(frChan)
 

@@ -18,6 +18,11 @@ const (
 	VisionEndpointKey = "WSS_VISION_ENDPOINT"
 )
 
+//IsValid Checks if the configuration is valid
+func (c *Configuration) IsValid() bool {
+	return c != nil && c.VisionSubscription != "" && c.ServiceEnpoint != ""
+}
+
 //BuildConfigurationFromEnvs builds the configuration from env variables
 func BuildConfigurationFromEnvs() (*Configuration, error) {
 	sub, err := getVisionSubscription()

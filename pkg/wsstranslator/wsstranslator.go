@@ -2,6 +2,7 @@ package wsstranslator
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Azure/azure-sdk-for-go/services/cognitiveservices/v3.0/translatortext"
 	"github.com/Azure/go-autorest/autorest"
@@ -14,7 +15,11 @@ type TranslatorServiceClient struct {
 }
 
 //NewTranslatorServiceClient TranslatorServiceClient constructor
-func NewTranslatorServiceClient(conf Configuration) *TranslatorServiceClient {
+func NewTranslatorServiceClient(conf *Configuration) *TranslatorServiceClient {
+	if !conf.IsValid() {
+		return nil
+	}
+
 	client := translatortext.NewTranslatorClient(conf.ServiceEnpoint)
 	client.Authorizer = autorest.NewAPIKeyAuthorizer(map[string]interface{}{
 		"Ocp-Apim-Subscription-Key":    conf.TranslatorSubscription,
@@ -22,13 +27,17 @@ func NewTranslatorServiceClient(conf Configuration) *TranslatorServiceClient {
 	}, nil)
 
 	return &TranslatorServiceClient{
-		conf:          conf,
+		conf:          *conf,
 		translatorCli: &client,
 	}
 }
 
 //InvokeTranslator invokes the Translator APIs with the provided photo
 func (s *TranslatorServiceClient) InvokeTranslator(translatorContext context.Context, message string, lang *string) (*TranslatorResult, error) {
+	if s == nil {
+		return nil, fmt.Errorf("text translator service client is not initialized")
+	}
+
 	toLang := []string{"en"}
 	if lang != nil {
 		toLang[0] = *lang

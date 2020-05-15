@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/FrancescoIlario/why-so-serious-bot/internal/bot"
 	"github.com/FrancescoIlario/why-so-serious-bot/internal/conf"
@@ -31,10 +32,6 @@ func main() {
 
 	// start bot
 	fbot.Start()
-
-	// wait undefinetly
-	shutdown := make(chan struct{})
-	<-shutdown
 }
 
 func getConfigurations() (*bot.Configuration, error) {
@@ -56,44 +53,44 @@ func getConfigurations() (*bot.Configuration, error) {
 	{ // Vision: Face
 		faceConf, err := wssface.BuildConfigurationFromEnvs()
 		if err != nil {
-			return nil, fmt.Errorf("error retrieving face service configuration: %v", err)
+			log.Printf("error retrieving face service configuration: %v", err)
 		}
-		c.FaceConf = *faceConf
+		c.FaceConf = faceConf
 	}
 	{ // Vision API
 		visionConf, err := wssvision.BuildConfigurationFromEnvs()
 		if err != nil {
-			return nil, fmt.Errorf("error retrieving vision service configuration: %v", err)
+			log.Printf("error retrieving vision service configuration: %v", err)
 		}
-		c.VisionConf = *visionConf
+		c.VisionConf = visionConf
 	}
 	{ // Vision: Form Recognizer
 		formRecognizerConf, err := wssformrecognizer.BuildConfigurationFromEnvs()
 		if err != nil {
-			return nil, fmt.Errorf("error retrieving form recognizer service configuration: %v", err)
+			log.Printf("error retrieving form recognizer service configuration: %v", err)
 		}
-		c.FormRecognizerConf = *formRecognizerConf
+		c.FormRecognizerConf = formRecognizerConf
 	}
 	{ // Language Text Analytics
 		textAnalyticsConf, err := wsssentiment.BuildConfigurationFromEnvs()
 		if err != nil {
-			return nil, fmt.Errorf("error retrieving text analitycs service configuration: %v", err)
+			log.Printf("error retrieving text analitycs service configuration: %v", err)
 		}
-		c.TextAnalyticsConf = *textAnalyticsConf
+		c.TextAnalyticsConf = textAnalyticsConf
 	}
 	{ // Language: Translator
 		translatorConf, err := wsstranslator.BuildConfigurationFromEnvs()
 		if err != nil {
-			return nil, fmt.Errorf("error retrieving translator service configuration: %v", err)
+			log.Printf("error retrieving translator service configuration: %v", err)
 		}
-		c.TranslatorConf = *translatorConf
+		c.TranslatorConf = translatorConf
 	}
 	{ // Decision: Moderator
 		moderatorConf, err := wssmoderator.BuildConfigurationFromEnvs()
 		if err != nil {
-			return nil, fmt.Errorf("error retrieving moderator service configuration: %v", err)
+			log.Printf("error retrieving moderator service configuration: %v", err)
 		}
-		c.ModeratorConf = *moderatorConf
+		c.ModeratorConf = moderatorConf
 	}
 
 	return &c, nil
@@ -110,6 +107,14 @@ func loadEnvs() {
 		godotenv.Load(".env.local")
 	}
 
-	godotenv.Load(".env." + env)
-	godotenv.Load() // The Original .env
+	envfile := ".env." + env
+	if err := godotenv.Load(envfile); err != nil {
+		cwd, _ := os.Getwd()
+		log.Printf("error loading file %v (%s): %v", envfile, cwd, err)
+	}
+
+	if err := godotenv.Load(); err != nil { // The Original .env
+		cwd, _ := os.Getwd()
+		log.Printf("error loading .env (%v) file: %v", cwd, err)
+	}
 }

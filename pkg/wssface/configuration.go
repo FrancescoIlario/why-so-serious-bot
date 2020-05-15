@@ -11,6 +11,11 @@ type Configuration struct {
 	FaceEndpoint     string
 }
 
+//IsValid Checks if the configuration is valid
+func (c *Configuration) IsValid() bool {
+	return c != nil && c.FaceEndpoint != "" && c.FaceSubscription != ""
+}
+
 const (
 	//FaceSubscriptionKey Azure Face Subscription env key
 	FaceSubscriptionKey = "WSS_FACE_SUBSCRIPTION_KEY"

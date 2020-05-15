@@ -18,6 +18,11 @@ const (
 	TextAnalyticsEndpointKey = "WSS_TEXTANALYTICS_ENDPOINT"
 )
 
+//IsValid Checks if the configuration is valid
+func (c *Configuration) IsValid() bool {
+	return c != nil && c.TextAnalyticsSubscription != "" && c.ServiceEnpoint != ""
+}
+
 //BuildConfigurationFromEnvs builds the configuration from env variables
 func BuildConfigurationFromEnvs() (*Configuration, error) {
 	sub, err := getTextAnalyticsSubscription()

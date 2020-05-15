@@ -15,10 +15,10 @@ import (
 type Configuration struct {
 	PollerInterval     time.Duration
 	Token              string
-	FaceConf           wssface.Configuration
-	VisionConf         wssvision.Configuration
-	TextAnalyticsConf  wsssentiment.Configuration
-	ModeratorConf      wssmoderator.Configuration
-	TranslatorConf     wsstranslator.Configuration
-	FormRecognizerConf wssformrecognizer.Configuration
+	FaceConf           *wssface.Configuration
+	VisionConf         *wssvision.Configuration
+	TextAnalyticsConf  *wsssentiment.Configuration
+	ModeratorConf      *wssmoderator.Configuration
+	TranslatorConf     *wsstranslator.Configuration
+	FormRecognizerConf *wssformrecognizer.Configuration
 }

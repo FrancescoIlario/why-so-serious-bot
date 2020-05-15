@@ -2,6 +2,7 @@ package wsssentiment
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Azure/azure-sdk-for-go/services/cognitiveservices/v2.0/textanalytics"
 	"github.com/Azure/go-autorest/autorest"
@@ -14,18 +15,26 @@ type TextAnalyticsServiceClient struct {
 }
 
 //NewTextAnalyticsServiceClient TextAnalyticsServiceClient constructor
-func NewTextAnalyticsServiceClient(conf Configuration) *TextAnalyticsServiceClient {
+func NewTextAnalyticsServiceClient(conf *Configuration) *TextAnalyticsServiceClient {
+	if !conf.IsValid() {
+		return nil
+	}
+
 	client := textanalytics.New(conf.ServiceEnpoint)
 	client.Authorizer = autorest.NewCognitiveServicesAuthorizer(conf.TextAnalyticsSubscription)
 
 	return &TextAnalyticsServiceClient{
-		conf:             conf,
+		conf:             *conf,
 		textanalyticsCli: &client,
 	}
 }
 
 //InvokeTextAnalytics invokes the TextAnalytics APIs with the provided photo
 func (s *TextAnalyticsServiceClient) InvokeTextAnalytics(textAnalyticsContext context.Context, message string) (*TextAnalyticsResult, error) {
+	if s == nil {
+		return nil, fmt.Errorf("text analytics service client is not initialized")
+	}
+
 	id, language := "singledoc", "en"
 	messages := []textanalytics.MultiLanguageInput{{ID: &id, Text: &message, Language: &language}}
 	res, err := s.textanalyticsCli.Sentiment(textAnalyticsContext,

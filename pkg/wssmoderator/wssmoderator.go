@@ -2,6 +2,7 @@ package wssmoderator
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"strings"
@@ -18,7 +19,11 @@ type ContentModeratorServiceClient struct {
 }
 
 //NewContentModeratorServiceClient ContentModeratorServiceClient constructor
-func NewContentModeratorServiceClient(conf Configuration) *ContentModeratorServiceClient {
+func NewContentModeratorServiceClient(conf *Configuration) *ContentModeratorServiceClient {
+	if !conf.IsValid() {
+		return nil
+	}
+
 	authorizer := autorest.NewCognitiveServicesAuthorizer(conf.ContentModeratorSubscription)
 
 	textModerator := contentmoderator.NewTextModerationClient(conf.ServiceEnpoint)
@@ -28,7 +33,7 @@ func NewContentModeratorServiceClient(conf Configuration) *ContentModeratorServi
 	imageModerator.Authorizer = authorizer
 
 	return &ContentModeratorServiceClient{
-		conf:              conf,
+		conf:              *conf,
 		textModeratorCli:  &textModerator,
 		imageModeratorCli: &imageModerator,
 	}
@@ -36,6 +41,10 @@ func NewContentModeratorServiceClient(conf Configuration) *ContentModeratorServi
 
 //InvokeContentModeratorText invokes the ContentModerator APIs with the provided message
 func (s *ContentModeratorServiceClient) InvokeContentModeratorText(ctx context.Context, message string) (*ContentModeratorTextResult, error) {
+	if s == nil {
+		return nil, fmt.Errorf("content moderator service client is not initialized")
+	}
+
 	msgReadCloser := ioutil.NopCloser(strings.NewReader(message))
 	res, err := s.textModeratorCli.ScreenText(ctx, "text/plain", msgReadCloser, "", nil, nil, "", nil)
 	if err != nil {
@@ -58,6 +67,10 @@ func (s *ContentModeratorServiceClient) InvokeContentModeratorText(ctx context.C
 
 //InvokeContentModeratorPhoto invokes the ContentModerator APIs with the provided photo
 func (s *ContentModeratorServiceClient) InvokeContentModeratorPhoto(ctx context.Context, photo io.ReadCloser) (*ContentModeratorPhotoResult, error) {
+	if s == nil {
+		return nil, fmt.Errorf("content moderator service client is not initialized")
+	}
+
 	res, err := s.imageModeratorCli.EvaluateFileInput(ctx, photo, nil)
 	if err != nil {
 		return nil, err
