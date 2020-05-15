@@ -19,7 +19,7 @@ func (b *Bot) onText(m *tb.Message) (*tb.Message, error) {
 	mChan := b.invokeModeratorTextAPI(ctx, m.Text)
 
 	taRes := <-taChan
-	if taRes == nil || taRes.SentimentScore != nil {
+	if taRes == nil || taRes.SentimentScore == nil {
 		message = "Hello, unfortunately I'm not smart enough to understand your sentiments. Please provide me with empathy!"
 	} else {
 		score := taRes.SentimentScore
