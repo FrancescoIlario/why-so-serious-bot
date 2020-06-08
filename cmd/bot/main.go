@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/FrancescoIlario/why-so-serious-bot/internal/bot"
 	"github.com/FrancescoIlario/why-so-serious-bot/internal/conf"
@@ -14,11 +13,14 @@ import (
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wsssentiment"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wsstranslator"
 	"github.com/FrancescoIlario/why-so-serious-bot/pkg/wssvision"
-	"github.com/joho/godotenv"
 )
 
+// AppEnvKey Environment variable key where is stored the environment to use for the app
+// execution. default is `development`
+const AppEnvKey = "WSSBOT_ENV"
+
 func main() {
-	loadEnvs() // load the env vars from .env file
+	envext.LoadDotenvs(AppEnvKey) // load the env vars from .env file
 
 	conf, err := getConfigurations()
 	if err != nil {
@@ -94,27 +96,4 @@ func getConfigurations() (*bot.Configuration, error) {
 	}
 
 	return &c, nil
-}
-
-// AppEnvKey Environment variable key where is stored the environment to use for the app
-// execution. default is `development`
-const AppEnvKey = "WSSBOT_ENV"
-
-func loadEnvs() {
-	env := envext.GetEnvOrDefault(AppEnvKey, "development")
-	godotenv.Load(".env." + env + ".local")
-	if "test" != env {
-		godotenv.Load(".env.local")
-	}
-
-	envfile := ".env." + env
-	if err := godotenv.Load(envfile); err != nil {
-		cwd, _ := os.Getwd()
-		log.Printf("error loading file %v (%s): %v", envfile, cwd, err)
-	}
-
-	if err := godotenv.Load(); err != nil { // The Original .env
-		cwd, _ := os.Getwd()
-		log.Printf("error loading .env (%v) file: %v", cwd, err)
-	}
 }
