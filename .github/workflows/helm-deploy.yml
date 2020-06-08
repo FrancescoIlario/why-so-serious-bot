@@ -18,8 +18,8 @@ on:
 # Environment variables available to all jobs and steps in this workflow
 env:
   REGISTRY_NAME: filario
-  CLUSTER_NAME: kube-play
-  CLUSTER_RESOURCE_GROUP: play-with-kubernetes
+  CLUSTER_NAME: proge_playground_aks
+  CLUSTER_RESOURCE_GROUP: PROGE_PLAYGROUND
   NAMESPACE: wss-bot
 
 jobs:
